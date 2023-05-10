@@ -7,16 +7,16 @@
 
 # polymer generator from classfied monomers.
 
+import os
+from pathlib import Path
+import numpy as np
+import pandas as pd
+import json
+import pickle
+from rdkit import Chem
+
 
 def biplym(df, targ=None, Pmode=None, dsp_rsl=None):
-    import os
-    from pathlib import Path
-    import numpy as np
-    import pandas as pd
-    import json
-    import pickle
-    from rdkit import Chem
-
     if targ is None:
         targ = [
             "all",

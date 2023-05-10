@@ -14,17 +14,17 @@
 # https://www.daylight.com/dayhtml_tutorials/languages/smarts/smarts_examples.html
 # https://www.daylight.com/dayhtml/doc/theory/theory.smarts.html
 
+import os
+from pathlib import Path
+import pandas as pd
+import json
+from .funclib import genmol, gencSMI, monomer_sel_MFG, monomer_sel_PFG
+
 
 def moncls(df, smiColn, minFG=None, maxFG=None, dsp_rsl=None):
     # The default number of the samle class of FG were limited 2 to 4
     # in the same molecule for poly functionalized monomer.
     # (dataframe, smiColn, minFG = 2, maxFG = 4)
-
-    import os
-    from pathlib import Path
-    import pandas as pd
-    import json
-    from .funclib import genmol, gencSMI, monomer_sel_MFG, monomer_sel_PFG
 
     if minFG is None:
         minFG = 2
