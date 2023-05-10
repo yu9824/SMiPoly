@@ -74,11 +74,16 @@ def biplym(
     with open(os.path.join(db_file, "excl_lst.json"), "r") as f:
         exclL: Dict[str, List[str]] = json.load(f)
     with open(os.path.join(db_file, "ps_rxn.pkl"), "rb") as f:
-        Ps_rxnL = pickle.load(f)
+        Ps_rxnL: Dict[
+            int, Chem.rdChemReactions.ChemicalReaction
+        ] = pickle.load(f)
     with open(os.path.join(db_file, "ps_class.json"), "r") as f:
         Ps_classL: Dict[str, int] = json.load(f)
     with open(os.path.join(db_file, "ps_gen.pkl"), "rb") as f:
-        Ps_GenL = pickle.load(f)
+        Ps_GenL: Dict[
+            str,
+            Tuple[Tuple[str, str, Chem.rdChemReactions.ChemicalReaction], ...],
+        ] = pickle.load(f)
 
     monL = {int(k): v for k, v in monL.items()}
     exclL = {int(k): v for k, v in exclL.items()}
