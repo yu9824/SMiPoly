@@ -8,6 +8,8 @@
 # 08/02/2021, M. Ohno
 # functions for MonomerClassifier and PolymerGenerator.
 
+from typing import List, Dict
+
 import numpy as np
 import pandas as pd
 from rdkit import Chem
@@ -54,7 +56,7 @@ def gencSMI(m: Chem.Mol) -> str:
 
 
 # classify candidate compounds for mono-FG monomer
-def monomer_sel_MFG(m: Chem.Mol, mons, excls) -> bool:
+def monomer_sel_MFG(m: Chem.Mol, mons: List[str], excls: List[str]) -> bool:
     if pd.notna(m):
         chk = []
         if len(mons) != 0:
@@ -87,7 +89,9 @@ def monomer_sel_MFG(m: Chem.Mol, mons, excls) -> bool:
 
 # classify candidate compounds for poly-FG monomer
 # count objective FGs
-def monomer_sel_PFG(m, mons, excls, minFG, maxFG) -> bool:
+def monomer_sel_PFG(
+    m: Chem.Mol, mons: List[str], excls: List[str], minFG: int, maxFG: int
+) -> bool:
     if pd.notna(m):
         chk_c = 0
         fchk_c = 0
@@ -142,7 +146,7 @@ def seq_chain(prod_P, targ_mon1, Ps_rxnL, mon_dic, monL):
 
 
 # define sequential polymerization for successive polymerization
-def seq_successive(prod_P, targ_rxn, monL, Ps_rxnL, P_class):
+def seq_successive(prod_P, targ_rxn, monL, Ps_rxnL, P_class) -> Chem.Mol:
     if Chem.MolToSmiles(prod_P) != "":
         seqFG0 = Chem.MolFromSmarts(monL[[200][0]])
         seqFG1 = Chem.MolFromSmarts(monL[[201][0]])
@@ -206,7 +210,15 @@ def seq_successive(prod_P, targ_rxn, monL, Ps_rxnL, P_class):
 
 
 # homopolymerization
-def homopolymR(mon1, mons, excls, targ_mon1, Ps_rxnL, mon_dic, monL):
+def homopolymR(
+    mon1: Chem.Mol,
+    mons: List[str],
+    excls: List[str],
+    targ_mon1: str,
+    Ps_rxnL: Dict[int, Chem.rdChemReactions.ChemicalReaction],
+    mon_dic: Dict[str, str],
+    monL: Dict[str, List[str]],
+) -> Chem.Mol:
     prod_P = mon1
     while monomer_sel_MFG(prod_P, mons, excls):  # 生成したポリマーがさらに重合可能な場合、再度反応
         prods = Ps_rxnL[mon_dic[targ_mon1]].RunReactants([prod_P])
@@ -226,7 +238,7 @@ def homopolymR(mon1, mons, excls, targ_mon1, Ps_rxnL, mon_dic, monL):
 
 
 # binarypolymerization
-def bipolymR(reactant, targ_rxn, monL, Ps_rxnL, P_class):
+def bipolymR(reactant, targ_rxn, monL, Ps_rxnL, P_class) -> Chem.Mol:
     prod_P = Chem.MolFromSmiles("")
     prods = targ_rxn.RunReactants(reactant)
     try:
@@ -245,7 +257,9 @@ def bipolymR(reactant, targ_rxn, monL, Ps_rxnL, P_class):
 
 
 # homopolymerization
-def homopolymA(mon1, mons, excls, targ_mon1, Ps_rxnL, mon_dic, monL):
+def homopolymA(
+    mon1, mons, excls, targ_mon1, Ps_rxnL, mon_dic, monL
+) -> List[Chem.Mol]:
     prod_P = mon1
     while monomer_sel_MFG(prod_P, mons, excls):  # 生成したポリマーがさらに重合可能な場合、再度反応
         prods = Ps_rxnL[mon_dic[targ_mon1]].RunReactants([prod_P])
@@ -268,7 +282,7 @@ def homopolymA(mon1, mons, excls, targ_mon1, Ps_rxnL, mon_dic, monL):
 
 
 # binarypolymerization
-def bipolymA(reactant, targ_rxn, monL, Ps_rxnL, P_class):
+def bipolymA(reactant, targ_rxn, monL, Ps_rxnL, P_class) -> List[Chem.Mol]:
     prod_P = Chem.MolFromSmiles("")
     prods = targ_rxn.RunReactants(reactant)
     prod_Ps = []
