@@ -14,24 +14,47 @@
 # https://www.daylight.com/dayhtml_tutorials/languages/smarts/smarts_examples.html
 # https://www.daylight.com/dayhtml/doc/theory/theory.smarts.html
 
+from typing import Dict, List
 import os
-from pathlib import Path
-import pandas as pd
 import json
+from pathlib import Path
+
+import pandas as pd
+
 from .funclib import genmol, gencSMI, monomer_sel_MFG, monomer_sel_PFG
 
 
-def moncls(df, smiColn, minFG=None, maxFG=None, dsp_rsl=None):
+def moncls(
+    df: pd.DataFrame,
+    smiColn: str,
+    minFG: int = 2,
+    maxFG: int = 4,
+    dsp_rsl: bool = False,
+) -> pd.DataFrame:
+    """classify monomers
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        name of the object
+    smiColn : str
+        The column label of the SMILES column
+    minFG : int, optional
+        minimum number of the polymerizable functional groups in the monomer
+         for successive polymerization (2 or more), by default 2
+    maxFG : int, optional
+        maxmum number of the polymerizable functional groups in the monomer
+          for successive polymerization (4 or less), by default 4
+    dsp_rsl : bool, optional
+        display classified result, by default False
+
+    Returns
+    -------
+    pd.DataFrame
+    """
     # The default number of the samle class of FG were limited 2 to 4
     # in the same molecule for poly functionalized monomer.
     # (dataframe, smiColn, minFG = 2, maxFG = 4)
-
-    if minFG is None:
-        minFG = 2
-    if maxFG is None:
-        maxFG = 4
-    if dsp_rsl is None:
-        dsp_rsl = False
 
     # read source file
     DF01 = df
@@ -63,11 +86,11 @@ def moncls(df, smiColn, minFG=None, maxFG=None, dsp_rsl=None):
         # mon_dic = json.load(f)
         pass
     with open(os.path.join(db_file, "mon_dic_inv.json"), "r") as f:
-        mon_dic_inv = json.load(f)
+        mon_dic_inv: Dict[str, str] = json.load(f)
     with open(os.path.join(db_file, "mon_lst.json"), "r") as f:
-        monL = json.load(f)
+        monL: Dict[str, List[str]] = json.load(f)
     with open(os.path.join(db_file, "excl_lst.json"), "r") as f:
-        exclL = json.load(f)
+        exclL: Dict[str, List[str]] = json.load(f)
 
     monL = {int(k): v for k, v in monL.items()}
     exclL = {int(k): v for k, v in exclL.items()}
@@ -79,10 +102,6 @@ def moncls(df, smiColn, minFG=None, maxFG=None, dsp_rsl=None):
     for i in range(
         1, 14
     ):  # fix the range if the monomer defination was modified
-        mons = ()
-        excls = ()
-        # chk = []
-        # chk_excl = []
         mons = monL[i]
         excls = list(exclL[i])
         DF02[mon_dic_inv[i]] = DF02["ROMol"].apply(
@@ -104,8 +123,6 @@ def moncls(df, smiColn, minFG=None, maxFG=None, dsp_rsl=None):
     for i in range(
         51, 59
     ):  # fix the range if the monomer defination was modified
-        mons = ()
-        excls = ()
         mons = monL[i]
         excls = exclL[i]
         # chk = []

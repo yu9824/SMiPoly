@@ -13,15 +13,39 @@ import pandas as pd
 from rdkit import Chem
 
 
-def genmol(s):
+def genmol(s: str) -> Chem.Mol:
+    """convert smiles to mol
+
+    Parameters
+    ----------
+    s : str
+        smiles
+
+    Returns
+    -------
+    Chem.Mol
+        Mol object
+    """
     try:
         m = Chem.MolFromSmiles(s)
-    except Exception:
+    except Exception:  # TypeError?
         m = np.nan
     return m
 
 
-def gencSMI(m):
+def gencSMI(m: Chem.Mol) -> str:
+    """convert mol to smiles
+
+    Parameters
+    ----------
+    m : Chem.Mol
+        Mol object
+
+    Returns
+    -------
+    str
+        smiles
+    """
     try:
         cS = Chem.MolToSmiles(m)
     except Exception:
@@ -30,7 +54,7 @@ def gencSMI(m):
 
 
 # classify candidate compounds for mono-FG monomer
-def monomer_sel_MFG(m, mons, excls):
+def monomer_sel_MFG(m: Chem.Mol, mons, excls) -> bool:
     if pd.notna(m):
         chk = []
         if len(mons) != 0:
@@ -63,10 +87,7 @@ def monomer_sel_MFG(m, mons, excls):
 
 # classify candidate compounds for poly-FG monomer
 # count objective FGs
-def monomer_sel_PFG(m, mons, excls, minFG, maxFG):
-    import pandas as pd
-    from rdkit import Chem
-
+def monomer_sel_PFG(m, mons, excls, minFG, maxFG) -> bool:
     if pd.notna(m):
         chk_c = 0
         fchk_c = 0
@@ -206,8 +227,6 @@ def homopolymR(mon1, mons, excls, targ_mon1, Ps_rxnL, mon_dic, monL):
 
 # binarypolymerization
 def bipolymR(reactant, targ_rxn, monL, Ps_rxnL, P_class):
-    from rdkit import Chem
-
     prod_P = Chem.MolFromSmiles("")
     prods = targ_rxn.RunReactants(reactant)
     try:
